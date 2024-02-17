@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <script type="application/javascript">
+      const ul = document.createElement('ul')
+      document.body.append(ul)
+
+      const t = document.createElement('textarea')
+      t.setAttribute('maxlength', '140'); // Limitar a 140 caracteres
+      document.body.append(t)
+      
+      const charCount = document.createElement('div');
+      charCount.innerText = '0/140';
+      document.body.append(charCount);
+
+      const b = document.createElement('button')
+      b.append('SEND')
+      document.body.append(b)
+
+
+      const getMessages = async () => {
+        const response = await fetch('https://chat.tiburoncin.lat/messages')
+        const messages = await response.json()
+        
+        messages.forEach((message) => {
+          const li = document.createElement('li')
+          li.append(`${message.username}: ${message.message}`)
+          ul.append(li)
+        })
+      }
+
+      const postMessage = async () => {
+        const message = t.value.trim(); 
+        if (message.length > 0) {
+          const body = {
+            username: 'Bianca',
+            message: message,
+          }
+          const response = await fetch('https://chat.tiburoncin.lat/messages', {
+            method: 'POST',
+            body: JSON.stringify(body)
+          })
+          ul.innerHTML = ""
+          getMessages()
+          t.value = ""; // Borrar contenido luego de enviar mensaje
+          charCount.innerText = '0/140'; 
+        }
+      }
+
+      b.addEventListener('click', postMessage);
+
+      t.addEventListener('input', () => {
+        charCount.innerText = `${t.value.length}/140`;
+      });
+
+      getMessages()
+    </script>
+  </body>
+</html>
