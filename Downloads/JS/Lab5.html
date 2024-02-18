@@ -10,7 +10,61 @@
 
   </head>
   <body>
+
+    <ul id="chat-messages"></ul>
+
     <script type="application/javascript">
+
+// Función para detectar y crear vista previa de enlaces a imágenes
+      function createImagePreview(message) {
+        const imageRegex = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g; // Expresión regular para enlaces a imágenes
+        
+        const matches = message.match(imageRegex);
+        if (matches) {
+          matches.forEach(match => {
+            const img = new Image(); // Crear un nuevo elemento de imagen
+            img.src = match;
+            img.alt = 'Image Preview';
+            
+            const li = document.createElement('li');
+            li.appendChild(img);
+            
+            document.getElementById('chat-messages').appendChild(li);
+          });
+        }
+      }
+      
+      // Función para detectar y crear vista previa de enlaces a páginas web
+      function createWebPreview(message) {
+        const webRegex = /https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,}/g; // Expresión regular para enlaces a páginas web
+        
+        const matches = message.match(webRegex);
+        if (matches) {
+          matches.forEach(match => {
+            const a = document.createElement('a');
+            a.href = match;
+            a.textContent = match;
+            a.target = '_blank';
+            
+            const li = document.createElement('li');
+            li.appendChild(a);
+            
+            document.getElementById('chat-messages').appendChild(li);
+          });
+        }
+      }
+      
+      // Función para agregar un mensaje al chat con vistas previas de enlaces
+      function addMessage(username, message) {
+        const li = document.createElement('li');
+        li.textContent = `${username}: ${message}`;
+        
+        createImagePreview(message);
+        createWebPreview(message);
+        
+        document.getElementById('chat-messages').appendChild(li);
+      }
+
       const ul = document.createElement('ul')
       document.body.append(ul)
 
@@ -42,7 +96,7 @@
         const message = t.value.trim(); 
         if (message.length > 0) {
           const body = {
-            username: 'Bianca',
+            username: 'an',
             message: message,
           }
           const response = await fetch('https://chat.tiburoncin.lat/messages', {
