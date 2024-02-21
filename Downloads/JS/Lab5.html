@@ -14,7 +14,7 @@
             left: 0;
             width: 100%;
             padding: 10px;
-            background-color: #f0f0f0;
+            background: linear-gradient(to right,#AFEEEE, #4682B4);
         }
         #input-container textarea {
             width: calc(100% - 100px);
@@ -32,7 +32,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            background-color: #007bff;
+            background-color: #000000;
             color: #fff;
             margin-left: 10px;
             transition: background-color 0.3s ease;
@@ -43,10 +43,30 @@
         #input-container #char-count {
             display: inline-block;
             margin-left: 10px;
-            color: #666;
+            color: #000000;
         }
         #chat-container {
             margin-bottom: 130px;
+        }
+       
+        #chat-messages li {
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            max-width: 70%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .user-message {
+            background: linear-gradient(to right, #FFA500, #DC143C);
+            color: #fff;
+            align-self: flex-end;
+        }
+        .other-message {
+            background: linear-gradient(to right,#7B68EE, #48D1CC);
+            color: #fff;
+            align-self: flex-start;
         }
     </style>
 </head>
@@ -84,14 +104,44 @@
             const messages = await response.json();
 
             const ul = document.getElementById('chat-messages');
-            ul.innerHTML = ''; 
+            const lastMessageCount = ul.children.length;
 
+            ul.innerHTML = '';
             messages.reverse().forEach((message) => {
                 const li = document.createElement('li');
-                li.textContent = `${message.username}: ${message.message}`;
+                li.classList.add('message-item');
+
+                
+                const messageContent = message.message.trim();
+                if (messageContent.startsWith('http') && (messageContent.endsWith('.png') || messageContent.endsWith('.jpg') || messageContent.endsWith('.jpeg') || messageContent.endsWith('.gif'))) {
+                    const img = document.createElement('img');
+                    img.src = messageContent;
+                    img.classList.add('message-image');
+                    li.appendChild(img);
+                } else {
+                    li.textContent = `${message.username}: ${message.message}`;
+                }
+
+                li.classList.add(message.username === 'Bianca_Cald' ? 'user-message' : 'other-message');
                 ul.appendChild(li);
+
+                setTimeout(() => {
+                    li.style.opacity = 1;
+                    li.style.transform = 'translateY(0)';
+                }, 100);
             });
+
+            // Auto-refresh 
+            const newMessageCount = ul.children.length;
+            if (newMessageCount > lastMessageCount) {
+                setTimeout(() => {
+                    getMessages();
+                    ul.lastChild.scrollIntoView({ behavior: 'smooth', block: 'end' }); 
+                }, 5000); 
+            }
         };
+
+
 
         const postMessage = async () => {
             const messageInput = document.getElementById('message-input');
