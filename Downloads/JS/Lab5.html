@@ -17,6 +17,7 @@
         <div id="char-count">0/140</div>
         <button id="send-button">SEND</button>
         <button id="theme-button">Dark Mode</button>
+        <span id="rocket">🚀</span>
     </div>
 
     <script type="application/javascript">
@@ -97,6 +98,7 @@
                         li.style.marginBottom = '5px';
                         li.style.maxWidth = '40%'; 
                     }
+                    
 
                     ul.appendChild(li);
 
@@ -110,7 +112,8 @@
                 if (newMessageCount > lastMessageCount) {
                     setTimeout(() => {
                         getMessages();
-                        ul.lastChild.scrollIntoView({ behavior: 'smooth', block: 'end' }); 
+                        const chatContainer = document.getElementById('chat-container');
+                        chatContainer.scrollTop = chatContainer.scrollHeight; 
                     },); 
                 }
             } catch (error) {
